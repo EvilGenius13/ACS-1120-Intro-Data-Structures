@@ -20,25 +20,60 @@ class Listogram(list):
 
     def add_count(self, word, count=1):
         """Increase frequency count of given word by given count amount."""
-        # TODO: Increase word frequency by count
+        # Enumerate returns a tupe of the index and the value
+        # EX: fruits = ["apple", "banana", "cherry"]
+        # for i, x in enumerate(fruits):
+        #   print(i, x)
+        # 0 apple
+        # 1 banana
+        # 2 cherry
+        for i, entry in enumerate(self):
+            if entry[0] == word:
+                self[i] = (word, entry[1] + count)
+                self.tokens += count
+                return
+        self.append((word, count))
+        self.types += 1
+        self.tokens += count
+        
 
     def frequency(self, word):
         """Return frequency count of given word, or 0 if word is not found."""
-        # TODO: Retrieve word frequency count
+        # check in self for word, if found return the count. Otherwise return 0.
+        for match in self:
+            if match[0] == word:
+                return match[1]
+        return 0
 
     def __contains__(self, word):
         """Return boolean indicating if given word is in this histogram."""
-        # TODO: Check if word is in this histogram
+        return any(word == entry[0] for entry in self)
 
     def index_of(self, target):
         """Return the index of entry containing given target word if found in
         this histogram, or None if target word is not found."""
-        # TODO: Implement linear search to find index of entry with target word
+        # uses enumerate to get the index and value of each entry in self
+        # if the value matches the target, return the index
+        # otherwise return None
+        for i, match in enumerate(self):
+            if match[0] == target:
+                return i
+        return None
 
     def sample(self):
         """Return a word from this histogram, randomly sampled by weighting
         each word's probability of being chosen by its observed frequency."""
-        # TODO: Randomly choose a word based on its frequency in this histogram
+        # Calculate the total count by summing the counts of all words in the histogram.
+        # Generate a random count between 1 and the total count.
+        # Iterate over the histogram entries, keeping track of the cumulative count.
+        # When the cumulative count exceeds or equals the random count, return the corresponding word.
+        total_count = sum(entry[1] for entry in self)
+        random_count = random.randint(1, total_count)
+        cumulative_count = 0
+        for entry in self:
+            cumulative_count += entry[1]
+            if cumulative_count >= random_count:
+                return entry[0]
 
 
 def print_histogram(word_list):
