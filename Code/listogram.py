@@ -20,22 +20,16 @@ class Listogram(list):
 
     def add_count(self, word, count=1):
         """Increase frequency count of given word by given count amount."""
-        # Enumerate returns a tupe of the index and the value
-        # EX: fruits = ["apple", "banana", "cherry"]
-        # for i, x in enumerate(fruits):
-        #   print(i, x)
-        # 0 apple
-        # 1 banana
-        # 2 cherry
-        for i, entry in enumerate(self):
+        # Iterate over the entries and check if the word exists
+        for entry in self:
             if entry[0] == word:
-                self[i] = (word, entry[1] + count)
+                entry[1] += count
                 self.tokens += count
                 return
-        self.append((word, count))
+        # If the word does not exist, add a new entry
+        self.append([word, count])
         self.types += 1
         self.tokens += count
-        
 
     def frequency(self, word):
         """Return frequency count of given word, or 0 if word is not found."""
