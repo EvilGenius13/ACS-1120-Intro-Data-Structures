@@ -1,32 +1,25 @@
 """Main script, uses other modules to generate sentences."""
 from flask import Flask, render_template, request
-from histogram import create_word_histogram
+from markov import MarkovChain
 import random
 
 app = Flask(__name__)
 
 # TODO: Initialize your histogram, hash table, or markov chain here.
 # Any code placed here will run only once, when the server starts.
-file_path = 'data/paragraph.txt'
-histogram = create_word_histogram(file_path)
-
 @app.route("/")
 def home():
-    word_probability = {}
+    chain = MarkovChain(order=2)  # Use order=2 for a second-order Markov chain
+    # Read text data from a file
+    file_path = 'data/paragraph3.txt'
+    data = MarkovChain.read_data_from_file(file_path)
+    # Train the Markov chain with the input data
+    chain.train(data)
 
-    total_words = sum(histogram.values())
-    for word, count in histogram.items():
-        word_probability[word] = count / total_words
+    # Generate a new sentence
+    generated_sentence = chain.generate_sentence()
 
-    random_word = random.choice(list(histogram.keys()))
-    print(f'Random word: {random_word}')
-    print(f'Probability: {word_probability[random_word]}')
-
-    top_words = sorted(word_probability.items(), key=lambda x: x[1], reverse=True)[:10]
-    print('Top 10 words:')
-    for word, probability in top_words:
-        print(f'Word: {word}, Probability: {probability}')
-    return render_template("index.html", random_word=random_word, probability=word_probability[random_word], top_words=top_words)
+    return render_template("index.html", sentence=generated_sentence)
 
 
 if __name__ == "__main__":
