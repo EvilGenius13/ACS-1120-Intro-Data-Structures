@@ -17,7 +17,7 @@ def home():
     chain.train(data)
 
     # Generate a new sentence
-    generated_sentence = chain.generate_sentence()
+    generated_sentence = chain.generate_sentence(max_length=20)
 
     return render_template("index.html", sentence=generated_sentence)
 
