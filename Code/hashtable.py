@@ -69,31 +69,30 @@ class HashTable(object):
         This is dependent on the length of the bucket."""
         index = self._bucket_index(key)
         bucket = self.buckets[index]
-        return bucket.find(lambda item: item[0] == key) is not None
-        # for item_key, item_value in bucket.items():
-        #     if item_key == key:
-        #         return True
-        # return False
+        for item_key, item_value in bucket.items():
+            if item_key == key:
+                return True
+        return False
 
     def get(self, key):
         """Return the value associated with the given key, or raise KeyError.
         Running time: O(1) This method has to find the bucket where the key belongs and then retrieve the value associated with the key and bucket."""
         index = self._bucket_index(key)
         bucket = self.buckets[index]
-        item = bucket.find(lambda item: item[0] == key)
-        if item is not None:
-            return item[1]
-        else:
-            raise KeyError('Key not found: {}'.format(key))
+        for item_key, item_value in bucket.items():
+            if item_key == key:
+                return item_value
+        raise KeyError('Key not found: {}'.format(key))
 
     def set(self, key, value):
         """Insert or update the given key with its associated value.
         Running time: O(1) This method has to find the bucket where the key belongs and then insert or update the key-value entry in the bucket."""
         index = self._bucket_index(key)
         bucket = self.buckets[index]
-        item = bucket.find(lambda item: item[0] == key)
-        if item is not None:
-            bucket.delete(item)
+        for item_key, item_value in bucket.items():
+            if item_key == key:
+                bucket.delete((item_key, item_value))
+                break
         bucket.append((key, value))
 
     def delete(self, key):
@@ -101,11 +100,11 @@ class HashTable(object):
         Running time: O(1) This method has to find the bucket where the key belongs and then delete the key-value entry in the bucket."""
         index = self._bucket_index(key)
         bucket = self.buckets[index]
-        item = bucket.find(lambda item: item[0] == key)
-        if item is not None:
-            bucket.delete(item)
-        else:
-            raise KeyError('Key not found: {}'.format(key))
+        for item_key, item_value in bucket.items():
+            if item_key == key:
+                bucket.delete((item_key, item_value))
+                return
+        raise KeyError('Key not found: {}'.format(key))
 
 def test_hash_table():
     ht = HashTable()
