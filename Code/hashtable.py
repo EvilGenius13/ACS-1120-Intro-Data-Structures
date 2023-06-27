@@ -30,7 +30,7 @@ class HashTable(object):
 
     def keys(self):
         """Return a list of all keys in this hash table.
-        TODO: Running time: O(???) Why and under what conditions?"""
+        Running time: O(n) This method has to loop through all the buckets and all the items in each bucket to get all the keys."""
         # Collect all keys in each bucket
         all_keys = []
         for bucket in self.buckets:
@@ -40,14 +40,16 @@ class HashTable(object):
 
     def values(self):
         """Return a list of all values in this hash table.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Loop through all buckets
-        # TODO: Collect all values in each bucket
+        Running time: O(n) This method has to loop through all the buckets and all the items in each bucket to get all the values."""
+        all_values = []
+        for bucket in self.buckets:
+            for key, value in bucket.items():
+                all_values.append(value)
+        return all_values
 
     def items(self):
         """Return a list of all items (key-value pairs) in this hash table.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # Collect all pairs of key-value entries in each bucket
+        Running time: O(n) This method has to loop through all the buckets and all the items in each bucket to get all the items."""
         all_items = []
         for bucket in self.buckets:
             all_items.extend(bucket.items())
@@ -55,41 +57,55 @@ class HashTable(object):
 
     def length(self):
         """Return the number of key-value entries by traversing its buckets.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Loop through all buckets
-        # TODO: Count number of key-value entries in each bucket
+        Running time: O(n) This method has to loop through all the buckets and count the items in each bucket to get the length."""
+        count = 0
+        for bucket in self.buckets:
+            count += bucket.length()
+        return count
 
     def contains(self, key):
         """Return True if this hash table contains the given key, or False.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Find bucket where given key belongs
-        # TODO: Check if key-value entry exists in bucket
+        Running time: O(n) This method has to find the bucket where the key belongs and then check if the key-value entry exists in the bucket.
+        This is dependent on the length of the bucket."""
+        index = self._bucket_index(key)
+        bucket = self.buckets[index]
+        return bucket.find(lambda item: item[0] == key) is not None
+        # for item_key, item_value in bucket.items():
+        #     if item_key == key:
+        #         return True
+        # return False
 
     def get(self, key):
         """Return the value associated with the given key, or raise KeyError.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Find bucket where given key belongs
-        # TODO: Check if key-value entry exists in bucket
-        # TODO: If found, return value associated with given key
-        # TODO: Otherwise, raise error to tell user get failed
-        # Hint: raise KeyError('Key not found: {}'.format(key))
+        Running time: O(1) This method has to find the bucket where the key belongs and then retrieve the value associated with the key and bucket."""
+        index = self._bucket_index(key)
+        bucket = self.buckets[index]
+        item = bucket.find(lambda item: item[0] == key)
+        if item is not None:
+            return item[1]
+        else:
+            raise KeyError('Key not found: {}'.format(key))
 
     def set(self, key, value):
         """Insert or update the given key with its associated value.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Find bucket where given key belongs
-        # TODO: Check if key-value entry exists in bucket
-        # TODO: If found, update value associated with given key
-        # TODO: Otherwise, insert given key-value entry into bucket
+        Running time: O(1) This method has to find the bucket where the key belongs and then insert or update the key-value entry in the bucket."""
+        index = self._bucket_index(key)
+        bucket = self.buckets[index]
+        item = bucket.find(lambda item: item[0] == key)
+        if item is not None:
+            bucket.delete(item)
+        bucket.append((key, value))
 
     def delete(self, key):
         """Delete the given key from this hash table, or raise KeyError.
-        TODO: Running time: O(???) Why and under what conditions?"""
-        # TODO: Find bucket where given key belongs
-        # TODO: Check if key-value entry exists in bucket
-        # TODO: If found, delete entry associated with given key
-        # TODO: Otherwise, raise error to tell user delete failed
-        # Hint: raise KeyError('Key not found: {}'.format(key))
+        Running time: O(1) This method has to find the bucket where the key belongs and then delete the key-value entry in the bucket."""
+        index = self._bucket_index(key)
+        bucket = self.buckets[index]
+        item = bucket.find(lambda item: item[0] == key)
+        if item is not None:
+            bucket.delete(item)
+        else:
+            raise KeyError('Key not found: {}'.format(key))
 
 def test_hash_table():
     ht = HashTable()
