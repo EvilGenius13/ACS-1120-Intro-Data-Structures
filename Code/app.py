@@ -1,23 +1,15 @@
 """Main script, uses other modules to generate sentences."""
 from flask import Flask, render_template, request
-from markov import MarkovChain
-import random
+from generator_class import SentenceGenerator
 
 app = Flask(__name__)
+sg = SentenceGenerator('data/paragraph3.txt')
 
 # TODO: Initialize your histogram, hash table, or markov chain here.
 # Any code placed here will run only once, when the server starts.
 @app.route("/")
 def home():
-    chain = MarkovChain(order=2)  # Use order=2 for a second-order Markov chain
-    # Read text data from a file
-    file_path = 'data/paragraph3.txt'
-    data = MarkovChain.read_data_from_file(file_path)
-    # Train the Markov chain with the input data
-    chain.train(data)
-
-    # Generate a new sentence
-    generated_sentence = chain.generate_sentence(max_length=20)
+    generated_sentence = sg.generate_random_sentence()
 
     return render_template("index.html", sentence=generated_sentence)
 
