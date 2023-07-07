@@ -3,10 +3,10 @@ from base_generator import MarkovGenerator
 
 app = Flask(__name__)
 
-generator_twilight = MarkovGenerator(order=2)
+generator_twilight = MarkovGenerator(order=3)
 text_twilight = generator_twilight.read_file("data/twilight.txt")
 
-generator_warcraft = MarkovGenerator(order=2)
+generator_warcraft = MarkovGenerator(order=3)
 text_warcraft = generator_warcraft.read_file("data/warcraft.txt")
 
 @app.route("/")
