@@ -1,12 +1,13 @@
 body {
   font-size: 20px;
-  background-image: url("https://wallpapers.com/images/featured/mbp5gjykl4mzxmvi.jpg");
+  background-image: url("https://wallpapercave.com/wp/wp3091505.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   position: relative;
-  font-family: 'Crimson Text', serif;
+  font-family: 'MedievalSharp', cursive;
   z-index: -1;
 }
+
 #container {
   display: flex;
   flex-direction: column;

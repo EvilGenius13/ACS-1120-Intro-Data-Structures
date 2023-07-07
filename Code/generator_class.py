@@ -1,55 +1,55 @@
-import string
-import random
+import re
 from collections import defaultdict
+import random
 
-class SentenceGenerator:
-    def __init__(self, corpus_path):
-        self.corpus_path = corpus_path
-        self.corpus = ''
-        self.ngrams = defaultdict(list)
-        self.special_chars = set(string.punctuation) - set('.,?!')
-        self.n = 2
-        self.max_sentence_length = 250
-        self.min_sentence_length = 50
 
-    def preprocess_corpus(self):
-        with open(self.corpus_path, 'r', encoding='utf-8') as file:
-            self.corpus = file.read()
-        self.corpus = self.corpus.strip()
-        self.corpus = ''.join(char for char in self.corpus if char not in self.special_chars)
+class MarkovGenerator:
+    def __init__(self, order=1):
+        self.order = order
+        self.start_words = []
+        self.word_chain = defaultdict(list)
 
-    def generate_ngrams(self):
-        tokens = self.corpus.split()
-        for i in range(len(tokens) - self.n):
-            ngram = tuple(tokens[i:i+self.n])
-            next_token = tokens[i+self.n]
-            self.ngrams[ngram].append(next_token)
+    def read_file(self, file_name):
+        with open(file_name) as f:
+            text = f.read()
+            words = re.findall(r"[a-zA-Z_.',:-;!?]+", text)
+        return words
 
-    def find_starting_ngram(self):
-        sentence_starting_candidates = []
-        for ngram in self.ngrams:
-            if ngram[0][0].isupper():
-                sentence_starting_candidates.append(ngram)
-        if not sentence_starting_candidates:
-            return random.choice(list(self.ngrams.keys()))
-        return random.choice(sentence_starting_candidates)
+    def generate_chain(self, source_text):
+        for i in range(len(source_text) - self.order):
+            word_tuple = tuple(source_text[i : i + self.order])
+            next_word = source_text[i + self.order]
+            if i == 0:
+                self.start_words.append(word_tuple)
+            self.word_chain[word_tuple].append(next_word)
 
-    def generate_sentence(self, starting_ngram):
-        sentence = list(starting_ngram)
-        while len(sentence) < self.max_sentence_length:
-            current_ngram = tuple(sentence[-self.n:])
-            next_token = random.choice(self.ngrams[current_ngram])
-            sentence.append(next_token)
-            if next_token.endswith(('.', '!', '?')):
-                break
-        generated_sentence = ' '.join(sentence)
-        return generated_sentence
+    def generate_sentence(self, number=1):
+        sentences = []
+        for _ in range(number):
+            current_word = random.choice(self.start_words)
+            sentence = list(current_word)
+            while current_word in self.word_chain:
+                next_word = random.choice(self.word_chain[current_word])
+                sentence.append(next_word)
+                current_word = tuple(sentence[-self.order:])
+                if sentence[-1][-1] in [".", "!", "?"]:
+                    break
+            sentence = " ".join(sentence)
+            sentences.append(sentence)
+        return sentences
 
-    def generate_random_sentence(self):
-        self.preprocess_corpus()
-        self.generate_ngrams()
-        generated_sentence = ""
-        while len(generated_sentence) < self.min_sentence_length or len(generated_sentence) > self.max_sentence_length:
-            starting_ngram = self.find_starting_ngram()
-            generated_sentence = self.generate_sentence(starting_ngram)
-        return generated_sentence
+
+if __name__ == "__main__":
+    # Create an instance of MarkovGenerator
+    generator = MarkovGenerator(order=2, smoothing=0.1)
+
+    # Read the source text from the file
+    file_name = "./data/twilight.txt"
+    source_text = generator.read_file(file_name)
+
+    # Train the generator with the source text
+    generator.train(source_text)
+
+    # Generate a random sentence
+    sentence = generator.generate_markov(sentence_number=1, min_length=50, max_length=250)
+    print(sentence)
