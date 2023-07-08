@@ -14,14 +14,24 @@ class MarkovGenerator:
         """
         with open(file_name) as f:
             text = f.read()
-            words = [match.group() for match in re.finditer(r"[a-zA-Z_.',:-;!?]+", text)]
+            text = text.replace("’", "'")
+            text_without_numbers = re.sub(r"\d+", "", text)  # Remove all numbers from the text
+            words = [match.group() for match in re.finditer(r"[a-zA-Z0-9_'.:,-;!?]+", text_without_numbers)]
         return words
 
+    def prepare_histogram(self, file_name: str) -> None:
+        """
+        Reads given source file, creates a Dictogram and stores it in self.words_histogram
+        """
+        words = self.read_file(file_name)
+        self.words_histogram["filled"] = Dictogram(words, self.order)
+    
     def generate_markov(self, source_text: List[str], number: int = 1) -> str:
         """
         Generates a random sentence from the given text and word count number,
         regenerating the sentence if its length is less than 50 or more than 250 characters.
         """
+        
         self.words_histogram.setdefault("filled", Dictogram(source_text, self.order))
 
         histogram = self.words_histogram["filled"]
@@ -48,11 +58,34 @@ class MarkovGenerator:
             attempts += 1
 
         raise Exception("Failed to generate a sentence within the specified length range after 10 attempts.")
+    
+    def check_sentence_match(self, generated_sentence: str, file_name: str) -> None:
+        """
+        Checks if the generated sentence matches a sentence in the specified text file.
+        Prints the percentage of the generated sentence that matches the source text.
+        """
+        with open(file_name) as f:
+            text = f.read().replace('\n', ' ').lower() # Replace line breaks with spaces and convert to lowercase
+            sentences = re.findall(r"[^.!?]+", text)
+
+        longest_match_len = 0
+        generated_sentence = generated_sentence.lower()
+
+        for sentence in sentences:
+            sentence = sentence.strip()
+            if sentence in generated_sentence:
+                longest_match_len = max(longest_match_len, len(sentence))
+
+        matching_percentage = 100.0 * longest_match_len / len(generated_sentence)
+        print(f'Matching percentage: {matching_percentage}%')
+
 
 if __name__ == "__main__":
     generator = MarkovGenerator(order=3)
-    text = generator.read_file("data/twilight.txt")
+    text = generator.read_file("data/twilight_fixed.txt")
     try:
-        print(generator.generate_markov(text, 3))
+        generated_sentence = generator.generate_markov(text, 3)
+        print(generated_sentence)
+        generator.check_sentence_match(generated_sentence, "data/twilight_fixed.txt")
     except Exception as e:
         print(e)

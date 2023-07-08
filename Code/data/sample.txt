@@ -1,1 +1,3 @@
-TODO: Replace this comment with a paragraph from your corpus.
+This is a sample text with numbers like 123 and 456. 
+There are words like apple, banana, and orange.
+We should exclude Twilight - Stephanie Meyer and 404 | P a g e.
