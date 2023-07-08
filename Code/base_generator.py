@@ -78,7 +78,7 @@ class MarkovGenerator:
 
         matching_percentage = 100.0 * longest_match_len / len(generated_sentence)
         print(f'Matching percentage: {matching_percentage}%')
-
+        return matching_percentage
 
 if __name__ == "__main__":
     generator = MarkovGenerator(order=3)
