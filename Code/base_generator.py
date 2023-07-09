@@ -31,8 +31,6 @@ class MarkovGenerator:
         Generates a random sentence from the given text and word count number,
         regenerating the sentence if its length is less than 50 or more than 250 characters.
         """
-        
-        self.words_histogram.setdefault("filled", Dictogram(source_text, self.order))
 
         histogram = self.words_histogram["filled"]
 
