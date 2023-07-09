@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  twiwargen:
+    image: evilgenius13/twiwargen
+    ports:
+      - 5000:5000
