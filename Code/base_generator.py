@@ -79,11 +79,11 @@ class MarkovGenerator:
         return matching_percentage
 
 if __name__ == "__main__":
-    generator = MarkovGenerator(order=3)
-    text = generator.read_file("data/twilight_fixed.txt")
+    generator_twilight = MarkovGenerator(order=3)
+    generator_twilight.prepare_histogram("data/twilight_fixed.txt")
     try:
-        generated_sentence = generator.generate_markov(text, 3)
+        generated_sentence = generator_twilight.generate_markov(3)
         print(generated_sentence)
-        generator.check_sentence_match(generated_sentence, "data/twilight_fixed.txt")
+        generator_twilight.check_sentence_match(generated_sentence, "data/twilight_fixed.txt")
     except Exception as e:
         print(e)
